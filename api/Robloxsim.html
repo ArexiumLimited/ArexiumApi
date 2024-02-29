@@ -1,1 +1,45 @@
-Hi
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roblox User Information</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<div id="user-info"></div>
+
+<script>
+$(document).ready(function() {
+    // Get the user ID from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('UserId');
+    
+    // Make a GET request to fetch Roblox user information
+    $.getJSON(`https://users.roblox.com/v1/users/${userId}`, function(data) {
+        const display_name = data["displayName"] || data["name"];
+        const username = data["name"];
+        const created_time_iso8601 = data["created"];
+        const bio = data["description"] || "N/A";
+        const ban_status = data["isBanned"] ? "Banned" : "Not Banned";
+        
+        const created_time = new Date(created_time_iso8601).toLocaleString();
+        
+        // Create HTML to display user information
+        let userInfoHTML = `
+            <h1>${display_name}</h1>
+            <p><strong>Username:</strong> ${username}</p>
+            <p><strong>Account created time:</strong> ${created_time}</p>
+            <p><strong>Bio:</strong> ${bio}</p>
+            <p><strong>Ban status:</strong> ${ban_status}</p>
+        `;
+        
+        $('#user-info').html(userInfoHTML);
+    })
+    .fail(function() {
+        $('#user-info').html("<p>Error: Could not fetch user information.</p>");
+    });
+});
+</script>
+</body>
+</html>
